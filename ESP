@@ -1,0 +1,21 @@
+local function highlightPlayer(player)
+    local highlight = Instance.new("BoxHandleAdornment")  -- Using BoxHandleAdornment for visibility through walls
+    highlight.Name = "PlayerHighlight"
+    highlight.Size = Vector3.new(6, 12, 6)  -- Customize the size as needed
+    highlight.Color3 = Color3.new(0, 1, 0)
+    highlight.Transparency = 0.5  -- Adjust transparency for that "through walls" effect
+    highlight.Adornee = player.Character:FindFirstChild("HumanoidRootPart")
+    highlight.AlwaysOnTop = true  -- Make sure it's always visible
+    highlight.ZIndex = 1  -- Bring it to the front
+    highlight.Parent = workspace
+end
+
+-- Loop through all players, including disabled ones
+for _, player in pairs(game:GetService("Players"):GetPlayers()) do
+    highlightPlayer(player)
+end
+
+-- Listen for new players and highlight them too
+game:GetService("Players").PlayerAdded:Connect(function(player)
+    highlightPlayer(player)
+end)
