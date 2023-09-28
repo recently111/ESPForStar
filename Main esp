@@ -1,0 +1,74 @@
+
+local function CreateDynamicPlayerBox(player)
+    local character = player.Character
+    if character and player ~= game.Players.LocalPlayer then
+        local box = Instance.new("BoxHandleAdornment")
+        box.Adornee = character
+        box.Size = character.HumanoidRootPart.Size * 1.1 -- Adjust the initial size as needed
+        box.Color3 = Color3.new(1, 0, 0) -- Red color
+        box.Transparency = 0.5 -- Adjust transparency if desired
+        box.AlwaysOnTop = true
+        box.ZIndex = 5
+        box.Parent = character
+
+        local textBox = Instance.new("TextBox")
+        textBox.Parent = character
+        textBox.Size = UDim2.new(0, 100, 0, 30)
+        textBox.Position = UDim2.new(0, -50, 0, -40) 
+        textBox.BackgroundTransparency = 1
+        textBox.Text = ""
+        textBox.TextColor3 = Color3.new(1, 1, 1) 
+        textBox.FontSize = Enum.FontSize.Size18
+        textBox.TextStrokeTransparency = 0
+        textBox.ZIndex = 5
+
+        
+        local nameTag = Instance.new("BillboardGui")
+        nameTag.Parent = character
+        nameTag.Name = "NameTag"
+        nameTag.Size = UDim2.new(0, 100, 0, 30)
+        nameTag.StudsOffset = Vector3.new(0, 3, 0) 
+        nameTag.AlwaysOnTop = true 
+        local nameLabel = Instance.new("TextLabel")
+        nameLabel.Parent = nameTag
+        nameLabel.Size = UDim2.new(1, 0, 1, 0)
+        nameLabel.Text = player.Name
+        nameLabel.TextColor3 = Color3.new(1, 1, 1) 
+        nameLabel.FontSize = Enum.FontSize.Size18
+        nameLabel.TextStrokeTransparency = 0
+        nameLabel.BackgroundTransparency = 1
+
+        
+        local function UpdateDisplay()
+            local myCharacter = game.Players.LocalPlayer.Character
+            if myCharacter and character.PrimaryPart and myCharacter.PrimaryPart then
+                local distance = (myCharacter.PrimaryPart.Position - character.PrimaryPart.Position).Magnitude
+                textBox.Text = string.format("Distance: %.2f studs", distance)
+
+                -- Adjust the box size based on distance
+                local newSize = character.HumanoidRootPart.Size * (1 + distance / 50) 
+                box.Size = newSize
+
+                -- Update the name tag position
+                nameTag.StudsOffset = Vector3.new(0, math.max(3, distance / 10), 0) 
+            else
+                textBox.Text = ""
+            end
+        end
+
+        -
+        UpdateDisplay()
+        game:GetService("RunService").RenderStepped:Connect(UpdateDisplay)
+    end
+end
+
+
+local function CreateDynamicPlayerBoxes()
+    for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
+        CreateDynamicPlayerBox(player)
+    end
+end
+
+
+CreateDynamicPlayerBoxes()
+game:GetService("Players").PlayerAdded:Connect(CreateDynamicPlayerBox)
